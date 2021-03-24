@@ -59,7 +59,7 @@ In this section we report additional information about the qualitative analysis 
 
 * #### Test-Set statistics 
 
-    <div>
-    <img src="Appendix/boxplot.png" class='ribbon' width="1200" height="500"> 
-    </div>
+    
+    <img src="Appendix/boxplot.png" class='ribbon' width="1400" height="700"> 
+    
 
