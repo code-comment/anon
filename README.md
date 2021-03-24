@@ -52,14 +52,18 @@ Finally, you can run: ```python3 main.py --n 3 --save_file_name 3-Grams.pickle``
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#### Ablation Study <a href='https://drive.google.com/drive/folders/1uRBbFDceYZTCwQhUnxTtKRoQemUzQIyy'>:chart_with_upwards_trend:</a> 
 
-#### Appendix
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#### Test-set statistics 
+
 
 In this section we report additional information about the qualitative analysis we performed
 
-* #### Test-Set statistics 
 
-    
-    <img src="Appendix/boxplot.png" class='ribbon' width="1400" height="700"> 
+<img src="Appendix/boxplot.png" class='ribbon' width="1400" height="700"> 
     
 
