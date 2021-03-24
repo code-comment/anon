@@ -64,6 +64,6 @@ Finally, you can run: ```python3 main.py --n 3 --save_file_name 3-Grams.pickle``
 In this section we report additional information about the qualitative analysis we performed
 
 
-<img src="Appendix/boxplot.png" class='ribbon' width="1400" height="700"> 
+<img src="Appendix/boxplot.png"  width="2500" height="700"> 
     
 
