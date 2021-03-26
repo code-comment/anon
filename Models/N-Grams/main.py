@@ -16,11 +16,13 @@ import os
 
 ########## GLOBAL VARIABLES ##########
 
-RESULTS_FOLDER = 'results_7-GRAM'
+RESULTS_FOLDER = 'results_5-GRAM'
 THRESHOLD = 15
 PREDICTIONS_FILE_JAVADOC = ''
 TARGET_FILE_JAVADOC = ''
 TARGET_FILE_INSIDE = ''
+CONFIDENCE_JAVADOC = ''
+CONFIDENCE_INSIDE = ''
 PREDICTIONS_FILE_INSIDE = ''
 
 #####################################
@@ -59,6 +61,7 @@ def createModel(corpus, model_name, n):
         for w_m in model[w1_wn]:
             model[w1_wn][w_m] /= total_count
 
+    print('Dumping the model!!')
     model_dir = os.path.join(RESULTS_FOLDER, model_name)
     with open(model_dir, 'wb') as file:
         dill.dump(model, file)
@@ -71,6 +74,8 @@ def getPrediction(model, context, input, output, logger=None):
     global PREDICTIONS_FILE_INSIDE
     global TARGET_FILE_INSIDE
     global TARGET_FILE_JAVADOC
+    global CONFIDENCE_JAVADOC
+    global CONFIDENCE_INSIDE
 
     predictions = []
     chain_of_words = ''
@@ -82,7 +87,7 @@ def getPrediction(model, context, input, output, logger=None):
     if THRESHOLD < len(label_list):
         label_list = label_list[0:THRESHOLD]
 
-
+    confidence = ''
     for (idx, label) in enumerate(label_list):
 
         if idx + 1 == THRESHOLD:
@@ -101,6 +106,7 @@ def getPrediction(model, context, input, output, logger=None):
             predicted_word = ''
 
             chain_of_words += predicted_word + ' '
+            confidence += '<prob>0</prob>'
             chain_of_words = chain_of_words.replace('\n', '')
 
 
@@ -113,6 +119,7 @@ def getPrediction(model, context, input, output, logger=None):
 
             chain_of_words += predicted_word + ' '
             chain_of_words = chain_of_words.replace('\n','')
+            confidence += ' <prob>{}</prob>'.format(test_dict[predicted_word])
 
             obj_pred[pred_key] = chain_of_words
 
@@ -123,9 +130,11 @@ def getPrediction(model, context, input, output, logger=None):
     if 'complete javadoc comment:' in input:
         TARGET_FILE_JAVADOC.write(' '.join(output[0:-1])+'\n')
         PREDICTIONS_FILE_JAVADOC.write(chain_of_words+'\n')
+        CONFIDENCE_JAVADOC.write(confidence+'\n')
     else:
         TARGET_FILE_INSIDE.write(' '.join(output[0:-1])+'\n')
         PREDICTIONS_FILE_INSIDE.write(chain_of_words+'\n')
+        CONFIDENCE_INSIDE.write(confidence + '\n')
 
 
 
@@ -206,7 +215,8 @@ def main():
     if not os.path.exists(RESULTS_FOLDER):
         os.mkdir(RESULTS_FOLDER)
 
-
+    global CONFIDENCE_INSIDE
+    global CONFIDENCE_JAVADOC
     global PREDICTIONS_FILE_JAVADOC
     global PREDICTIONS_FILE_INSIDE
     global TARGET_FILE_INSIDE
@@ -243,14 +253,18 @@ def main():
 
     ##############################################
 
+    base_path_dataset = 'NGrams'
 
-    loaded_javadoc = loadData('javadoc_train_4_Ngram.txt')
-    loaded_method_level = loadData('inside_train_4_Ngram.txt')
+    loaded_javadoc = loadData(os.path.join(base_path_dataset, 'javadoc_train_ngram.txt'))
+    loaded_method_level = loadData(os.path.join(base_path_dataset, 'inside_train_ngram.txt'))
     loaded_items = loaded_javadoc + loaded_method_level
 
     print('****** MODEL CREATION IS ABOUT TO START! ******')
 
     n_gram_model = createModel(loaded_items, args.save_file_name, args.n)
+    # with open('results_5-GRAM/5-Grams.pickle', 'rb') as file:
+    #     n_gram_model = dill.load(file)
+
 
     print('****** MODEL CREATION ENDS! ******')
 
@@ -260,6 +274,8 @@ def main():
     TARGET_FILE_JAVADOC = open(os.path.join(RESULTS_FOLDER, 'target_javadoc.txt'), 'a+')
     TARGET_FILE_INSIDE = open(os.path.join(RESULTS_FOLDER, 'target_inside.txt'), 'a+')
     PREDICTIONS_FILE_INSIDE = open(os.path.join(RESULTS_FOLDER, 'predictions_inside.txt'), 'a+')
+    CONFIDENCE_INSIDE = open(os.path.join(RESULTS_FOLDER, 'confidence_inside.txt'), 'a+')
+    CONFIDENCE_JAVADOC = open(os.path.join(RESULTS_FOLDER, 'confidence_javadoc.txt'), 'a+')
 
     logger = Logger('logger.log', 'log_object', logging.INFO)
     logger_info = logger.getLogger()
@@ -269,6 +285,8 @@ def main():
     TARGET_FILE_JAVADOC.close()
     TARGET_FILE_INSIDE.close()
     PREDICTIONS_FILE_INSIDE.close()
+    CONFIDENCE_INSIDE.close()
+    CONFIDENCE_JAVADOC.close()
 
 
 
